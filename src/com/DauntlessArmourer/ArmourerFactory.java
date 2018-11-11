@@ -1,5 +1,6 @@
 package com.DauntlessArmourer;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import com.DauntlessArmourer.Effects.Effect;
 public class ArmourerFactory
 {
 	private static HashMap<CellType, List<String>> CellEffects = new HashMap<>();
+	private static HashMap<String, Armour> armourCreated = new HashMap<>();
+	private static HashMap<String, Effect> effectsCreated = new HashMap<>();
 	private static ArrayList<String> effects = new ArrayList<>();
 	private static ArrayList<String> armour = new ArrayList<>();
 
@@ -49,6 +52,62 @@ public class ArmourerFactory
 				"RazorwingChest", "RazorwingHead", "ShockjawLegs", "ShockjawArms", "ShockjawChest", "ShockjawHead",
 				"FirebrandLegs", "FirebrandArms", "FirebrandChest", "FirebrandHead", "RagetailLegs", "RagetailArms",
 				"RagetailChest", "RagetailHead"));
+
+		for (String s : armour)
+		{
+			ArmourerFactory.getArmourByName(s, 6);
+		}
+
+		for (String s : effects)
+		{
+			ArmourerFactory.getEffectByName(s, 6);
+		}
+	}
+
+	public static ArrayList<Armour> getArmourByEffect(String name)
+	{
+		ArrayList<Armour> armourFound = new ArrayList<>();
+
+		for (String s : ArmourerFactory.getArmour())
+		{
+			Armour a = ArmourerFactory.getArmourByName(s, 6);
+
+			ArrayList<Effect> armourEffects = a.getEffects();
+
+			for (Effect e : armourEffects)
+			{
+				if (e.getName().equals(name))
+				{
+					armourFound.add(a);
+					break;
+				}
+			}
+		}
+
+		return armourFound;
+	}
+
+	public static ArrayList<Armour> getArmourByCell(String name)
+	{
+		ArrayList<Armour> armourFound = new ArrayList<>();
+
+		for (String s : ArmourerFactory.getArmour())
+		{
+			Armour a = ArmourerFactory.getArmourByName(s, 6);
+
+			ArrayList<CellType> armourCells = a.getCellTypes();
+
+			for (CellType ct : armourCells)
+			{
+				if (ct.toString().equals(name))
+				{
+					armourFound.add(a);
+					break;
+				}
+			}
+		}
+
+		return armourFound;
 	}
 
 	public static ArrayList<String> getArmourBySlot(Slot type)
@@ -68,10 +127,20 @@ public class ArmourerFactory
 
 	public static Armour getArmourByName(String name, int level)
 	{
+		if (armourCreated.containsKey(name))
+		{
+			Armour armour2 = armourCreated.get(name);
+			armour2.setLevel(level);
+			return armour2;
+		}
+
 		try
 		{
 			Class<?> classFound = Class.forName("com.DauntlessArmourer.Armour." + name);
-			return (Armour) classFound.getDeclaredConstructor(int.class).newInstance(level);
+			Constructor<?> declaredConstructor = classFound.getDeclaredConstructor(int.class);
+			Armour armour = (Armour) declaredConstructor.newInstance(level);
+			armourCreated.put(name, armour);
+			return armour;
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -87,10 +156,20 @@ public class ArmourerFactory
 
 	public static Effect getEffectByName(String name, int level)
 	{
+		if (effectsCreated.containsKey(name))
+		{
+			Effect effectFound = effectsCreated.get(name);
+			effectFound.setLevel(level);
+			return effectFound;
+		}
+
 		try
 		{
 			Class<?> classFound = Class.forName("com.DauntlessArmourer.Effects." + name);
-			return (Effect) classFound.getDeclaredConstructor(int.class).newInstance(level);
+			Constructor<?> declaredConstructor = classFound.getDeclaredConstructor(int.class);
+			Effect newInstance = (Effect) declaredConstructor.newInstance(level);
+			effectsCreated.put(name, newInstance);
+			return newInstance;
 		} catch (Exception e)
 		{
 			e.printStackTrace();

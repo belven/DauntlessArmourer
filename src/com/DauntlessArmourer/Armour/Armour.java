@@ -25,4 +25,8 @@ public abstract class Armour
 		return this.getClass().getSimpleName();
 	}
 
+	public void setLevel(int newLevel)
+	{
+		this.level = newLevel;
+	}
 }

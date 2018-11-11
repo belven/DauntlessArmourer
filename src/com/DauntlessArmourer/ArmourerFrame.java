@@ -6,11 +6,13 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,12 @@ public class ArmourerFrame extends Frame
 	private JTextArea legEffects = new JTextArea();
 
 	private JTextArea totalEffectsText = new JTextArea();
+
+	private Choice effectChoice = new Choice();
+	private JTextArea effectArmourList = new JTextArea();
+
+	private Choice cellChoice = new Choice();
+	private JTextArea cellArmourList = new JTextArea();
 
 	private Choice headArmour = new Choice();
 	private Choice chestArmour = new Choice();
@@ -65,10 +73,39 @@ public class ArmourerFrame extends Frame
 		addListeners();
 		setupLists();
 
+		setupPositions();
+
+		setVisible(true);
+
+		headArmour.select(0);
+		chestArmour.select(0);
+		armArmour.select(0);
+		legArmour.select(0);
+
+		updateCellCombos(Slot.Head);
+		updateCellCombos(Slot.Chest);
+		updateCellCombos(Slot.Arms);
+		updateCellCombos(Slot.Legs);
+
+		updateArmourText(headArmourSelected.getName(), Slot.Head);
+		updateArmourText(chestArmourSelected.getName(), Slot.Chest);
+		updateArmourText(armArmourSelected.getName(), Slot.Arms);
+		updateArmourText(legArmourSelected.getName(), Slot.Legs);
+
+		updateEffectChoice(effectChoice.getItem(0));
+		updateCellChoice(cellChoice.getItem(0));
+
+		updateEffects();
+
+		pack();
+	}
+
+	private void setupPositions()
+	{
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.NORTHWEST;
-		c.fill = GridBagConstraints.BOTH;
-
+		c.fill = GridBagConstraints.NONE;
+		c.insets = new Insets(2, 2, 2, 20);
 		c.gridx = 0;
 		c.gridy = 0;
 		add(headArmour, c);
@@ -125,32 +162,24 @@ public class ArmourerFrame extends Frame
 
 		totalEffectsText.setEditable(false);
 
-		setVisible(true);
+		c.gridwidth = 0;
+		c.ipady = 0;
 
-		headArmour.select(0);
-		chestArmour.select(0);
-		armArmour.select(0);
-		legArmour.select(0);
+		c.gridx = 0;
+		c.gridy = 5;
+		add(effectChoice, c);
 
-		pack();
+		c.gridx = 1;
+		c.gridy = 5;
+		add(effectArmourList, c);
 
-		updateCellCombos(Slot.Head);
-		updateCellCombos(Slot.Chest);
-		updateCellCombos(Slot.Arms);
-		updateCellCombos(Slot.Legs);
+		c.gridx = 0;
+		c.gridy = 6;
+		add(cellChoice, c);
 
-		updateArmourText(headArmourSelected.getName(), Slot.Head);
-		updateArmourText(chestArmourSelected.getName(), Slot.Chest);
-		updateArmourText(armArmourSelected.getName(), Slot.Arms);
-		updateArmourText(legArmourSelected.getName(), Slot.Legs);
-
-		for (String s : ArmourerFactory.getArmourBySlot(Slot.Head))
-		{
-			if (ArmourerFactory.getArmourByName(s, 6).getCellTypes().contains(CellType.Power))
-				System.out.println(s);
-		}
-
-		updateEffects();
+		c.gridx = 1;
+		c.gridy = 6;
+		add(cellArmourList, c);
 	}
 
 	private void updateEffects()
@@ -205,7 +234,7 @@ public class ArmourerFrame extends Frame
 		}
 
 		totalEffectsText.setText(sb.toString());
-		pack();
+		// pack();
 	}
 
 	private void updateEffectLevel(HashMap<String, Effect> totalEffects, Effect effect)
@@ -222,7 +251,6 @@ public class ArmourerFrame extends Frame
 
 	private void updateCellCombos(Slot slot)
 	{
-
 		List<String> effectsForHeadCell = ArmourerFactory.getEffectsForCell(headArmourSelected.getCellTypes().get(0));
 		List<String> effectsForChestCell = ArmourerFactory.getEffectsForCell(chestArmourSelected.getCellTypes().get(0));
 		List<String> effectsForArmCell = ArmourerFactory.getEffectsForCell(armArmourSelected.getCellTypes().get(0));
@@ -327,8 +355,73 @@ public class ArmourerFrame extends Frame
 		}
 	}
 
+	private void updateCellChoice(String selectedEffect)
+	{
+		int amount = 0;
+		StringBuilder sb = new StringBuilder();
+
+		for (Armour a : ArmourerFactory.getArmourByCell(selectedEffect))
+		{
+			amount++;
+			sb.append(a.getName() + ", ");
+
+			if (amount % 3 == 0)
+			{
+				sb.append("\n");
+			}
+		}
+
+		if (sb.length() > 0)
+		{
+			String armourFound = sb.toString();
+			cellArmourList.setText(armourFound.substring(0, armourFound.lastIndexOf(", ")));
+		}
+	}
+
+	private void updateEffectChoice(String selectedEffect)
+	{
+		int amount = 0;
+		StringBuilder sb = new StringBuilder();
+
+		for (Armour a : ArmourerFactory.getArmourByEffect(selectedEffect))
+		{
+			amount++;
+			sb.append(a.getName() + ", ");
+
+			if (amount % 3 == 0)
+			{
+				sb.append("\n");
+			}
+		}
+
+		if (sb.length() > 0)
+		{
+			String armourFound = sb.toString();
+			effectArmourList.setText(armourFound.substring(0, armourFound.lastIndexOf(", ")));
+		}
+	}
+
 	private void addListeners()
 	{
+		effectChoice.addItemListener(new ItemListener()
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				String selectedEffect = e.getItem().toString();
+				updateEffectChoice(selectedEffect);
+			}
+		});
+
+		cellChoice.addItemListener(new ItemListener()
+		{
+			public void itemStateChanged(ItemEvent e)
+			{
+				String selectedEffect = e.getItem().toString();
+
+				updateCellChoice(selectedEffect);
+			}
+		});
+
 		headArmour.addItemListener(new ItemListener()
 		{
 			public void itemStateChanged(ItemEvent e)
@@ -403,6 +496,12 @@ public class ArmourerFrame extends Frame
 	{
 		Font f = new Font("Calibri", Font.PLAIN, 16);
 
+		effectChoice.setFont(f);
+		effectArmourList.setFont(f);
+
+		cellChoice.setFont(f);
+		cellArmourList.setFont(f);
+
 		headEffects.setFont(f);
 		chestEffects.setFont(f);
 		armEffects.setFont(f);
@@ -427,11 +526,14 @@ public class ArmourerFrame extends Frame
 		ArrayList<String> chestList = ArmourerFactory.getArmourBySlot(Slot.Chest);
 		ArrayList<String> armsList = ArmourerFactory.getArmourBySlot(Slot.Arms);
 		ArrayList<String> legsList = ArmourerFactory.getArmourBySlot(Slot.Legs);
+		ArrayList<String> effects = ArmourerFactory.getEffects();
+		List<CellType> cells = Arrays.asList(CellType.values());
 
 		Collections.sort(headList);
 		Collections.sort(chestList);
 		Collections.sort(armsList);
 		Collections.sort(legsList);
+		Collections.sort(effects);
 
 		for (String s : headList)
 		{
@@ -451,6 +553,24 @@ public class ArmourerFrame extends Frame
 		for (String s : legsList)
 		{
 			legArmour.add(s);
+		}
+
+		for (String s : legsList)
+		{
+			legArmour.add(s);
+		}
+
+		for (String s : effects)
+		{
+			if (ArmourerFactory.getArmourByEffect(s).size() > 0)
+			{
+				effectChoice.add(s);
+			}
+		}
+
+		for (CellType ct : cells)
+		{
+			cellChoice.add(ct.toString());
 		}
 	}
 
@@ -480,4 +600,5 @@ public class ArmourerFrame extends Frame
 			}
 		});
 	}
+
 }
