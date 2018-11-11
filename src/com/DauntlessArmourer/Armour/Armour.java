@@ -10,6 +10,11 @@ public abstract class Armour
 	int level = 0;
 	Slot slot = Slot.Head;
 
+	public Slot getSlot()
+	{
+		return slot;
+	}
+
 	public Armour(int newLevel, Slot newSlot)
 	{
 		this.level = newLevel;

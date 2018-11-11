@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.JTextArea;
 
@@ -185,6 +186,7 @@ public class ArmourerFrame extends Frame
 	private void updateEffects()
 	{
 		StringBuilder sb = new StringBuilder();
+		totalEffectsText.setText("");
 
 		HashMap<String, Effect> totalEffects = new HashMap<>();
 
@@ -235,6 +237,107 @@ public class ArmourerFrame extends Frame
 
 		totalEffectsText.setText(sb.toString());
 		// pack();
+	}
+
+	private void calculateArmour()
+	{
+		CellType cell = null;
+		HashMap<Slot, Armour> armourResult = new HashMap<>();
+
+		String selectedEffect = effectChoice.getSelectedItem();
+
+		// Find Armour that contains the effects
+		findArmourForSlot(armourResult, ArmourerFactory.getArmourByEffect(selectedEffect));
+
+		// FInd Cells that have the effects, then find armour that has those cells
+		for (Entry<CellType, List<String>> t : ArmourerFactory.getCellEffects().entrySet())
+		{
+			if (t.getValue().contains(selectedEffect))
+			{
+				cell = t.getKey();
+				findArmourForSlot(armourResult, ArmourerFactory.getArmourByCell(cell.toString()));
+				break;
+			}
+		}
+
+		// Select all the armour found
+		for (Entry<Slot, Armour> ar : armourResult.entrySet())
+		{
+			switch (ar.getKey())
+			{
+			case Head:
+				headArmour.select(ar.getValue().getName());
+				break;
+			case Chest:
+				chestArmour.select(ar.getValue().getName());
+				break;
+			case Arms:
+				armArmour.select(ar.getValue().getName());
+				break;
+			case Legs:
+				legArmour.select(ar.getValue().getName());
+				break;
+			default:
+				break;
+			}
+
+			updateArmourText(ar.getValue().getName(), ar.getKey());
+		}
+
+		// Update the text
+		updateEffects();
+
+		// Update the cell combos with the new lists
+		for (Slot s : Slot.values())
+		{
+			updateCellCombos(s);
+		}
+
+		if (cell != null)
+		{
+			for (Entry<Slot, Armour> ar : armourResult.entrySet())
+			{
+				if (ar.getValue().getCellTypes().contains(cell))
+				{
+					switch (ar.getKey())
+					{
+					case Head:
+						headArmourCellChoice.select(selectedEffect);
+						armCell = ArmourerFactory.getEffectByName(selectedEffect, 3);
+						break;
+					case Chest:
+						chestArmourCellChoice.select(selectedEffect);
+						chestCell = ArmourerFactory.getEffectByName(selectedEffect, 3);
+						break;
+					case Arms:
+						armArmourCellChoice.select(selectedEffect);
+						armCell = ArmourerFactory.getEffectByName(selectedEffect, 3);
+						break;
+					case Legs:
+						legArmourCellChoice.select(selectedEffect);
+						legCell = ArmourerFactory.getEffectByName(selectedEffect, 3);
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+
+		// Update the text
+		updateEffects();
+
+	}
+
+	private void findArmourForSlot(HashMap<Slot, Armour> armourResult, List<Armour> armourFound)
+	{
+		for (Armour a : armourFound)
+		{
+			if (!armourResult.containsKey(a.getSlot()))
+			{
+				armourResult.put(a.getSlot(), a);
+			}
+		}
 	}
 
 	private void updateEffectLevel(HashMap<String, Effect> totalEffects, Effect effect)
@@ -409,6 +512,7 @@ public class ArmourerFrame extends Frame
 			{
 				String selectedEffect = e.getItem().toString();
 				updateEffectChoice(selectedEffect);
+				calculateArmour();
 			}
 		});
 
