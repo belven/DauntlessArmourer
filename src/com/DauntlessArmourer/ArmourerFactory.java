@@ -16,9 +16,9 @@ import com.DauntlessArmourer.Weapons.WeaponType;
 public class ArmourerFactory
 {
 	private static HashMap<CellType, List<String>> CellEffects = new HashMap<>();
-	// private static HashMap<String, Armour> armourCreated = new HashMap<>();
-	// private static HashMap<String, Effect> effectsCreated = new HashMap<>();
-	//// private static HashMap<String, Weapon> weaponsCreated = new HashMap<>();
+	private static HashMap<String, Armour> armourCreated = new HashMap<>();
+	private static HashMap<String, Effect> effectsCreated = new HashMap<>();
+	private static HashMap<String, Weapon> weaponsCreated = new HashMap<>();
 
 	private static ArrayList<String> effects = new ArrayList<>();
 	private static ArrayList<String> armour = new ArrayList<>();
@@ -58,7 +58,16 @@ public class ArmourerFactory
 				"FirebrandLegs", "FirebrandArms", "FirebrandChest", "FirebrandHead", "RagetailLegs", "RagetailArms",
 				"RagetailChest", "RagetailHead"));
 
-		weapons.addAll(Arrays.asList("BloodfireBlades", "Deadblades"));
+		weapons.addAll(Arrays.asList("BloodfireAxe", "BloodfireBlades", "BloodfireHammer", "BloodfirePike",
+				"BloodfireSaber", "Deadblades", "DeadeyeAxe", "DeadeyeHammer", "DeadeyePike", "DeadeyeRipper",
+				"Fireblades", "Firecutter", "Firemace", "Firepike", "Firesaber", "Frostaxe", "Frostblades", "Frostmaul",
+				"Frostpike", "Frostsaber", "KoshaisFist", "KoshaisLash", "KoshaisSpine", "KoshaisTooth", "KoshaisWrath",
+				"Moonblades", "Mooncleaver", "Mooncrusher", "Moonpike", "Moonsaber", "Rageblades", "Ragecleaver",
+				"Ragehammer", "Ragepike", "Ragesaber", "RazorwingAxe", "RazorwingBlades", "RazorwingHammer",
+				"RazorwingPike", "RazorwingSword", "Rezacrusher", "Rezacutter", "Rezakatana", "Rezakiller",
+				"RezakirisFangs", "ShockjawBlades", "ShockjawPike", "ShockjawScythe", "ShockjawSmasher",
+				"ShockjawSword", "ShrowdBlades", "Shrowdmaul", "Shrowdpike", "ShrowdReaper", "ShrowdSlicer",
+				"StalkersBite", "StalkersMercy", "StalkersSpike", "StalkersStrike", "StalkersTalons"));
 
 		for (String s : armour)
 		{
@@ -212,18 +221,19 @@ public class ArmourerFactory
 
 	public static Weapon getWeaponByName(String name, int level)
 	{
-//		if (weaponsCreated.containsKey(name))
-//		{
-//			Weapon weapon2 = weaponsCreated.get(name);
-//			weapon2.setLevel(level);
-//			return weapon2;
-//		}
+		if (weaponsCreated.containsKey(name))
+		{
+			Weapon weapon2 = weaponsCreated.get(name);
+			weapon2.setLevel(level);
+			return weapon2;
+		}
 
 		try
 		{
 			Class<?> classFound = Class.forName("com.DauntlessArmourer.Weapons." + name);
 			Constructor<?> declaredConstructor = classFound.getDeclaredConstructor(int.class);
 			Weapon weapon = (Weapon) declaredConstructor.newInstance(level);
+			weaponsCreated.put(name, weapon);
 			return weapon;
 		} catch (Exception e)
 		{
@@ -235,18 +245,19 @@ public class ArmourerFactory
 
 	public static Armour getArmourByName(String name, int level)
 	{
-//		if (armourCreated.containsKey(name))
-//		{
-//			Armour armour2 = armourCreated.get(name);
-//			armour2.setLevel(level);
-//			return armour2;
-//		}
+		if (armourCreated.containsKey(name))
+		{
+			Armour armour2 = armourCreated.get(name);
+			armour2.setLevel(level);
+			return armour2;
+		}
 
 		try
 		{
 			Class<?> classFound = Class.forName("com.DauntlessArmourer.Armour." + name);
 			Constructor<?> declaredConstructor = classFound.getDeclaredConstructor(int.class);
 			Armour armour = (Armour) declaredConstructor.newInstance(level);
+			armourCreated.put(name, armour);
 			return armour;
 		} catch (Exception e)
 		{
@@ -263,18 +274,19 @@ public class ArmourerFactory
 
 	public static Effect getEffectByName(String name, int level)
 	{
-//		if (effectsCreated.containsKey(name))
-//		{
-//			Effect effectFound = effectsCreated.get(name);
-//			effectFound.setLevel(level);
-//			return effectFound;
-//		}
+		if (effectsCreated.containsKey(name))
+		{
+			Effect effectFound = effectsCreated.get(name);
+			effectFound.setLevel(level);
+			return effectFound;
+		}
 
 		try
 		{
 			Class<?> classFound = Class.forName("com.DauntlessArmourer.Effects." + name);
 			Constructor<?> declaredConstructor = classFound.getDeclaredConstructor(int.class);
 			Effect newInstance = (Effect) declaredConstructor.newInstance(level);
+			effectsCreated.put(name, newInstance);
 			return newInstance;
 		} catch (Exception e)
 		{
