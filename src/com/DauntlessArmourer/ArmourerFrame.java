@@ -97,10 +97,10 @@ public class ArmourerFrame extends Frame
 		updateCellCombos(Slot.Arms);
 		updateCellCombos(Slot.Legs);
 
-		updateArmourText(headArmourSelected.getName(), Slot.Head);
-		updateArmourText(chestArmourSelected.getName(), Slot.Chest);
-		updateArmourText(armArmourSelected.getName(), Slot.Arms);
-		updateArmourText(legArmourSelected.getName(), Slot.Legs);
+		updateItemText(headArmourSelected.getName(), Slot.Head);
+		updateItemText(chestArmourSelected.getName(), Slot.Chest);
+		updateItemText(armArmourSelected.getName(), Slot.Arms);
+		updateItemText(legArmourSelected.getName(), Slot.Legs);
 
 		updateEffectChoice(effectChoice.getItem(0));
 		updateCellChoice(cellChoice.getItem(0));
@@ -348,7 +348,7 @@ public class ArmourerFrame extends Frame
 				break;
 			}
 
-			updateArmourText(ar.getValue().getName(), ar.getKey());
+			updateItemText(ar.getValue().getName(), ar.getKey());
 		}
 
 		// Update the text
@@ -428,6 +428,13 @@ public class ArmourerFrame extends Frame
 		List<String> effectsForArmCell = ArmourerFactory.getEffectsForCell(armArmourSelected.getCellTypes().get(0));
 		List<String> effectsForLegCell = ArmourerFactory.getEffectsForCell(legArmourSelected.getCellTypes().get(0));
 
+		List<String> effectsForWeaponCells = new ArrayList<>();
+
+		for (CellType ct : weaponSelected.getCellTypes())
+		{
+			effectsForWeaponCells.addAll(ArmourerFactory.getEffectsForCell(ct));
+		}
+
 		switch (slot)
 		{
 		case Head:
@@ -475,13 +482,22 @@ public class ArmourerFrame extends Frame
 			break;
 		}
 		case Weapon:
+//			weaponCellChoiceA.removeAll();
+//			weaponCellChoiceB.removeAll();
+//			
+//			for (String s : effectsForWeaponCells)
+//			{
+//				weaponCellChoiceA.add(s);
+//			}
+//			legArmourCellChoice.select(effectsForWeaponCells.get(0));
+//			legCell = ArmourerFactory.getEffectByName(effectsForWeaponCells.get(0), 3);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void updateArmourText(String name, Slot slot)
+	private void updateItemText(String name, Slot slot)
 	{
 		switch (slot)
 		{
@@ -489,7 +505,7 @@ public class ArmourerFrame extends Frame
 		{
 			Armour armourFound = ArmourerFactory.getArmourByName(name, 6);
 			armArmourSelected = armourFound;
-			armEffects.setText(getArmourEffectsString(armourFound));
+			armEffects.setText(getItemEffectsString(armourFound));
 			updateCellCombos(Slot.Arms);
 			updateEffects();
 			break;
@@ -498,7 +514,7 @@ public class ArmourerFrame extends Frame
 		{
 			Armour armourFound = ArmourerFactory.getArmourByName(name, 6);
 			chestArmourSelected = armourFound;
-			chestEffects.setText(getArmourEffectsString(armourFound));
+			chestEffects.setText(getItemEffectsString(armourFound));
 			updateCellCombos(Slot.Chest);
 			updateEffects();
 			break;
@@ -507,7 +523,7 @@ public class ArmourerFrame extends Frame
 		{
 			Armour armourFound = ArmourerFactory.getArmourByName(name, 6);
 			headArmourSelected = armourFound;
-			headEffects.setText(getArmourEffectsString(armourFound));
+			headEffects.setText(getItemEffectsString(armourFound));
 			updateCellCombos(Slot.Head);
 			updateEffects();
 			break;
@@ -516,13 +532,18 @@ public class ArmourerFrame extends Frame
 		{
 			Armour armourFound = ArmourerFactory.getArmourByName(name, 6);
 			legArmourSelected = armourFound;
-			legEffects.setText(getArmourEffectsString(armourFound));
+			legEffects.setText(getItemEffectsString(armourFound));
 			updateCellCombos(Slot.Legs);
 			updateEffects();
 			break;
 		}
 		case Weapon:
 		{
+			Weapon weaponFound = ArmourerFactory.getWeaponByName(name, 6);
+			weaponSelected = weaponFound;
+			weaponEffects.setText(getItemEffectsString(weaponFound));
+			updateCellCombos(Slot.Weapon);
+			updateEffects();
 			break;
 		}
 		default:
@@ -599,11 +620,7 @@ public class ArmourerFrame extends Frame
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-				String weapon = e.getItem().toString();
-				Weapon w = ArmourerFactory.getWeaponByName(weapon, 6);
-				weaponSelected = w;
-
-				updateEffects();
+				updateItemText(e.getItem().toString(), Slot.Weapon);
 			}
 		});
 
@@ -631,7 +648,7 @@ public class ArmourerFrame extends Frame
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-				updateArmourText(e.getItem().toString(), Slot.Head);
+				updateItemText(e.getItem().toString(), Slot.Head);
 			}
 		});
 
@@ -639,8 +656,7 @@ public class ArmourerFrame extends Frame
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-
-				updateArmourText(e.getItem().toString(), Slot.Chest);
+				updateItemText(e.getItem().toString(), Slot.Chest);
 			}
 		});
 
@@ -648,7 +664,7 @@ public class ArmourerFrame extends Frame
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-				updateArmourText(e.getItem().toString(), Slot.Arms);
+				updateItemText(e.getItem().toString(), Slot.Arms);
 			}
 		});
 
@@ -656,7 +672,7 @@ public class ArmourerFrame extends Frame
 		{
 			public void itemStateChanged(ItemEvent e)
 			{
-				updateArmourText(e.getItem().toString(), Slot.Legs);
+				updateItemText(e.getItem().toString(), Slot.Legs);
 			}
 		});
 
@@ -790,14 +806,18 @@ public class ArmourerFrame extends Frame
 		}
 	}
 
-	private String getArmourEffectsString(Armour armourFound)
+	private String getItemEffectsString(Item itemFound)
 	{
-		ArrayList<Effect> armourEffects = armourFound.getEffects();
-		Effect effect1 = armourEffects.get(0);
-		Effect effect2 = armourEffects.get(1);
+		ArrayList<Effect> itemEffects = itemFound.getEffects();
+		Effect effect1 = itemEffects.get(0);
 
 		String text = effect1.getName() + " " + effect1.getLevel() + ": " + effect1.getEffectText();
-		text += "\n" + effect2.getName() + " " + effect2.getLevel() + ": " + effect2.getEffectText();
+
+		if (itemEffects.size() > 1)
+		{
+			Effect effect2 = itemEffects.get(1);
+			text += "\n" + effect2.getName() + " " + effect2.getLevel() + ": " + effect2.getEffectText();
+		}
 		return text;
 	}
 
