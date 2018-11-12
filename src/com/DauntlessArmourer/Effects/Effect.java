@@ -23,12 +23,12 @@ public abstract class Effect
 
 	public int getLevel()
 	{
-		return Math.min(6, level);
+		return level;
 	}
 
 	public void setLevel(int newLevel)
 	{
-		level = newLevel;
+		level = Math.min(newLevel, 6);
 	}
 
 }
