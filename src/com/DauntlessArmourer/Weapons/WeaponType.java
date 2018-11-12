@@ -2,6 +2,6 @@ package com.DauntlessArmourer.Weapons;
 
 public enum WeaponType
 {
-	None, Sword, Hammer, Axe, WarPike, ChainBlades
+	None, Sword, Hammer, Axe, Warpike, ChainBlades
 
 }
