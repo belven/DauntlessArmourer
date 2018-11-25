@@ -351,11 +351,11 @@ public class ArmourerFrame extends Frame
 			{
 				pw.println(s);
 
-//				if (amount % 2 == 0)
-//				{
-//					pw.println();
-//				}
-//				amount++;
+				//				if (amount % 2 )
+				//				{
+				//					pw.println();
+				//				}
+				//				amount++;
 			}
 
 			pw.close();
@@ -542,28 +542,24 @@ public class ArmourerFrame extends Frame
 		if (!totalEffects.containsKey(effect.getName()))
 		{
 			totalEffects.put(effect.getName(), effect);
-			// System.out.println("Updated effect: " + effect.getName() + " " +
-			// effect.getLevel());
+			System.out.println("Updated effect: " + effect.getName() + " " + effect.getLevel());
 		} else
 		{
 			Effect effectFound = totalEffects.get(effect.getName());
 			effectFound.setLevel(effectFound.getLevel() + effect.getLevel());
-			// System.out.println("Updated effect: " + effectFound.getName() + " " +
-			// effectFound.getLevel());
+			totalEffects.put(effectFound.getName(), effectFound);
+			System.out.println("Updated effect: " + effectFound.getName() + " " + effectFound.getLevel());
 		}
 	}
 
 	private void updateCellCombos(Slot slot)
 	{
-		List<String> effectsForHeadCell = ArmourerFactory.getEffectsForCell(headArmourSelected.getCellTypes().get(0));
-		List<String> effectsForChestCell = ArmourerFactory.getEffectsForCell(chestArmourSelected.getCellTypes().get(0));
-		List<String> effectsForArmCell = ArmourerFactory.getEffectsForCell(armArmourSelected.getCellTypes().get(0));
-		List<String> effectsForLegCell = ArmourerFactory.getEffectsForCell(legArmourSelected.getCellTypes().get(0));
-
 		switch (slot)
 		{
 		case Head:
 		{
+			List<String> effectsForHeadCell = ArmourerFactory
+					.getEffectsForCell(headArmourSelected.getCellTypes().get(0));
 			headArmourCellChoice.removeAll();
 			for (String s : effectsForHeadCell)
 			{
@@ -575,6 +571,8 @@ public class ArmourerFrame extends Frame
 		}
 		case Chest:
 		{
+			List<String> effectsForChestCell = ArmourerFactory
+					.getEffectsForCell(chestArmourSelected.getCellTypes().get(0));
 			chestArmourCellChoice.removeAll();
 			for (String s : effectsForChestCell)
 			{
@@ -586,6 +584,7 @@ public class ArmourerFrame extends Frame
 		}
 		case Arms:
 		{
+			List<String> effectsForArmCell = ArmourerFactory.getEffectsForCell(armArmourSelected.getCellTypes().get(0));
 			armArmourCellChoice.removeAll();
 			for (String s : effectsForArmCell)
 			{
@@ -597,6 +596,7 @@ public class ArmourerFrame extends Frame
 		}
 		case Legs:
 		{
+			List<String> effectsForLegCell = ArmourerFactory.getEffectsForCell(legArmourSelected.getCellTypes().get(0));
 			legArmourCellChoice.removeAll();
 			for (String s : effectsForLegCell)
 			{
@@ -608,11 +608,12 @@ public class ArmourerFrame extends Frame
 		}
 		case Weapon:
 		{
+			weaponCellAChoice.removeAll();
+			weaponCellBChoice.removeAll();
+
 			ArrayList<CellType> cellTypes = weaponSelected.getCellTypes();
 			if (cellTypes.size() > 0)
 			{
-				weaponCellAChoice.removeAll();
-				weaponCellBChoice.removeAll();
 
 				List<String> effectsForWeaponACell = ArmourerFactory.getEffectsForCell(cellTypes.get(0));
 
@@ -620,6 +621,8 @@ public class ArmourerFrame extends Frame
 				{
 					weaponCellAChoice.add(s);
 				}
+				weaponCellAChoice.select(effectsForWeaponACell.get(0));
+				weaponCellA = ArmourerFactory.getEffectByName(effectsForWeaponACell.get(0), 3);
 
 				if (cellTypes.size() > 1)
 				{
@@ -629,7 +632,10 @@ public class ArmourerFrame extends Frame
 					{
 						weaponCellBChoice.add(s);
 					}
+					weaponCellBChoice.select(effectsForWeaponBCell.get(0));
+					weaponCellB = ArmourerFactory.getEffectByName(effectsForWeaponBCell.get(0), 3);
 				}
+				break;
 			}
 		}
 			break;
@@ -702,6 +708,17 @@ public class ArmourerFrame extends Frame
 		{
 			amount++;
 			sb.append(a.getName() + ", ");
+
+			if (amount % 5 == 0)
+			{
+				sb.append("\n");
+			}
+		}
+
+		for (Weapon w : ArmourerFactory.getWeaponByCell(selectedEffect))
+		{
+			amount++;
+			sb.append(w.getName() + ", ");
 
 			if (amount % 5 == 0)
 			{
@@ -965,10 +982,8 @@ public class ArmourerFrame extends Frame
 
 		for (String s : effects)
 		{
-			if (ArmourerFactory.getArmourByEffect(s).size() > 0)
-			{
-				effectChoice.add(s);
-			}
+			effectChoice.add(s);
+
 		}
 
 		for (CellType ct : cells)
@@ -980,14 +995,19 @@ public class ArmourerFrame extends Frame
 	private String getItemEffectsString(Item itemFound)
 	{
 		ArrayList<Effect> itemEffects = itemFound.getEffects();
-		Effect effect1 = itemEffects.get(0);
+		String text = "";
 
-		String text = effect1.getName() + " " + effect1.getLevel() + ": " + effect1.getEffectText();
-
-		if (itemEffects.size() > 1)
+		if (itemEffects.size() > 0)
 		{
-			Effect effect2 = itemEffects.get(1);
-			text += "\n" + effect2.getName() + " " + effect2.getLevel() + ": " + effect2.getEffectText();
+			Effect effect1 = itemEffects.get(0);
+
+			text = effect1.getName() + " " + effect1.getLevel() + ": " + effect1.getEffectText();
+
+			if (itemEffects.size() > 1)
+			{
+				Effect effect2 = itemEffects.get(1);
+				text += "\n" + effect2.getName() + " " + effect2.getLevel() + ": " + effect2.getEffectText();
+			}
 		}
 		return text;
 	}
