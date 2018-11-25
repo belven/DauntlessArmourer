@@ -221,12 +221,12 @@ public class ArmourerFactory
 
 	public static Weapon getWeaponByName(String name, int level)
 	{
-		if (weaponsCreated.containsKey(name))
-		{
-			Weapon weapon2 = weaponsCreated.get(name);
-			weapon2.setLevel(level);
-			return weapon2;
-		}
+//		if (weaponsCreated.containsKey(name))
+//		{
+//			Weapon weapon2 = weaponsCreated.get(name);
+//			weapon2.setLevel(level);
+//			return weapon2;
+//		}
 
 		try
 		{
@@ -245,12 +245,12 @@ public class ArmourerFactory
 
 	public static Armour getArmourByName(String name, int level)
 	{
-		if (armourCreated.containsKey(name))
-		{
-			Armour armour2 = armourCreated.get(name);
-			armour2.setLevel(level);
-			return armour2;
-		}
+//		if (armourCreated.containsKey(name))
+//		{
+//			Armour armour2 = armourCreated.get(name);
+//			armour2.setLevel(level);
+//			return armour2;
+//		}
 
 		try
 		{
@@ -274,12 +274,12 @@ public class ArmourerFactory
 
 	public static Effect getEffectByName(String name, int level)
 	{
-		if (effectsCreated.containsKey(name))
-		{
-			Effect effectFound = effectsCreated.get(name);
-			effectFound.setLevel(level);
-			return effectFound;
-		}
+//		if (effectsCreated.containsKey(name))
+//		{
+//			Effect effectFound = effectsCreated.get(name);
+//			effectFound.setLevel(level);
+//			return effectFound;
+//		}
 
 		try
 		{

@@ -1,5 +1,7 @@
 package com.DauntlessArmourer;
 
+import javax.swing.JScrollPane;
+
 public class Application
 {
 
